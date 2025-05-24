@@ -1,0 +1,50 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Edit and Delete Tickets</title>
+</head>
+<body>
+  <h2>Edit/Delete Tickets</h2>
+  <ul id="ticket-list"></ul>
+
+  <script>
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Please login first.");
+      window.location.href = "login.html";
+    }
+
+    async function loadTickets() {
+      const res = await fetch("https://localhost:5001/api/ticket/list", {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+
+      const tickets = await res.json();
+      const list = document.getElementById("ticket-list");
+      list.innerHTML = "";
+
+      tickets.forEach(t => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <strong>${t.title}</strong> - ${t.status}
+          <button onclick="editTicket(${t.id})">Edit</button>
+          <button onclick="deleteTicket(${t.id})">Delete</button>
+        `;
+        list.appendChild(li);
+      });
+    }
+
+    async function deleteTicket(id) {
+      alert("Delete functionality not implemented. Backend DELETE endpoint needed.");
+    }
+
+    function editTicket(id) {
+      alert("Edit functionality not implemented. Redirect to edit form.");
+    }
+
+    window.onload = loadTickets;
+  </script>
+</body>
+</html>

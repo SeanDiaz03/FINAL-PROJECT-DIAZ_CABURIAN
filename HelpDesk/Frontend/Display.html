@@ -1,0 +1,36 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Display Tickets</title>
+</head>
+<body>
+  <h2>Ticket Display</h2>
+  <ul id="ticket-list"></ul>
+
+  <script>
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Please log in first.");
+      window.location.href = "login.html";
+    }
+
+    async function loadTickets() {
+      const res = await fetch("https://localhost:5001/api/ticket/list", {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      const tickets = await res.json();
+      const list = document.getElementById("ticket-list");
+      list.innerHTML = "";
+      tickets.forEach(t => {
+        const li = document.createElement("li");
+        li.textContent = `${t.title} | ${t.status} | ${t.severity}`;
+        list.appendChild(li);
+      });
+    }
+
+    window.onload = loadTickets;
+  </script>
+</body>
+</html>

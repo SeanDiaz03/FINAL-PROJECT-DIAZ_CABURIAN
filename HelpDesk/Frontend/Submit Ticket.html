@@ -1,0 +1,57 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Submit Ticket</title>
+</head>
+<body>
+  <h2>Create a Helpdesk Ticket</h2>
+  <form id="ticket-form">
+    <input type="text" id="title" placeholder="Title" required><br />
+    <textarea id="description" placeholder="Description" required></textarea><br />
+    <select id="severity">
+      <option>Low</option>
+      <option>Medium</option>
+      <option>High</option>
+      <option>Critical</option>
+    </select><br />
+    <button type="submit">Submit Ticket</button>
+  </form>
+
+  <script>
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Please login first.");
+      window.location.href = "login.html";
+    }
+
+    document.getElementById("ticket-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const ticket = {
+        title: document.getElementById("title").value,
+        description: document.getElementById("description").value,
+        severity: document.getElementById("severity").value,
+        status: "Open",
+        createdBy: "user", // You can replace with actual user logic
+        departmentId: 1,
+        assignedTo: ""
+      };
+
+      const res = await fetch("https://localhost:5001/api/ticket/create", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(ticket)
+      });
+
+      const result = await res.text();
+      alert(result);
+      window.location.href = "Show the status.html";
+    });
+  </script>
+</body>
+</html>

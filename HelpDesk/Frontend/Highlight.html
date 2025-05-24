@@ -1,0 +1,52 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Highlight Tickets</title>
+  <style>
+    .critical { color: red; font-weight: bold; }
+    .high { color: orange; }
+    .medium { color: goldenrod; }
+    .low { color: green; }
+  </style>
+</head>
+<body>
+  <h2>Highlighted Tickets by Severity</h2>
+  <ul id="ticket-list"></ul>
+
+  <script>
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Please log in first.");
+      window.location.href = "login.html";
+    }
+
+    function severityClass(severity) {
+      return {
+        'Critical': 'critical',
+        'High': 'high',
+        'Medium': 'medium',
+        'Low': 'low'
+      }[severity] || '';
+    }
+
+    async function loadTickets() {
+      const res = await fetch("https://localhost:5001/api/ticket/list", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const tickets = await res.json();
+      const list = document.getElementById("ticket-list");
+      list.innerHTML = "";
+      tickets.forEach(t => {
+        const li = document.createElement("li");
+        li.className = severityClass(t.severity);
+        li.textContent = `${t.title} - ${t.severity}`;
+        list.appendChild(li);
+      });
+    }
+
+    window.onload = loadTickets;
+  </script>
+</body>
+</html>
