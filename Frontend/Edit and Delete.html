@@ -1,0 +1,44 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Edit and Delete Tickets</title>
+</head>
+<body>
+  <h2>Edit/Delete Tickets</h2>
+  <ul id="ticket-list"></ul>
+
+  <script type="module">
+      import { fetchWithAuth } from './api.js';
+
+      async function loadTickets() {
+          const tickets = await fetchWithAuth('/ticket/list');
+          const list = document.getElementById("ticket-list");
+
+          list.innerHTML = tickets.map(t => `
+              <li>
+                  <strong>${t.title}</strong> - ${t.status}
+                  <button onclick="editTicket(${t.id})">Edit</button>
+                  <button onclick="deleteTicket(${t.id})">Delete</button>
+              </li>
+          `).join('');
+      }
+
+      async function deleteTicket(id) {
+          if (!confirm('Are you sure you want to delete this ticket?')) return;
+
+          try {
+              await fetchWithAuth(`/ticket/${id}`, { method: 'DELETE' });
+              alert('Ticket deleted successfully');
+              loadTickets();
+          } catch (error) {
+              alert(error.message);
+          }
+      }
+
+      window.deleteTicket = deleteTicket;
+      window.onload = loadTickets;
+  </script>
+</body>
+</html>

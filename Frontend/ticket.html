@@ -1,0 +1,48 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Simple Ticket Form</title>
+</head>
+<body>
+  <h2>Submit Ticket (Simplified)</h2>
+  <form id="ticket-form">
+    <input id="title" placeholder="Title" required><br />
+    <input id="description" placeholder="Description" required><br />
+    <select id="severity">
+      <option>Low</option><option>Medium</option><option>High</option><option>Critical</option>
+    </select><br />
+    <button type="submit">Submit</button>
+  </form>
+
+  <script>
+    const token = localStorage.getItem("token");
+    if (!token) window.location.href = "login.html";
+
+    document.getElementById("ticket-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = {
+        title: document.getElementById("title").value,
+        description: document.getElementById("description").value,
+        severity: document.getElementById("severity").value,
+        status: "Open",
+        createdBy: "user",
+        departmentId: 1,
+        assignedTo: ""
+      };
+
+      const res = await fetch("https://localhost:5001/api/ticket/create", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
+
+      alert(await res.text());
+    });
+  </script>
+</body>
+</html>

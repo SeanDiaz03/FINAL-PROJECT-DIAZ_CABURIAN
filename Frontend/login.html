@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Helpdesk Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+        }
+
+        form {
+            max-width: 300px;
+            margin: auto;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <h2>Login</h2>
+    <form id="login-form">
+        <label>
+            Username:
+            <input type="text" id="username" required />
+        </label>
+        <label>
+            Password:
+            <input type="password" id="password" required />
+        </label>
+        <button type="submit">Login</button>
+    </form>
+
+    <script type="module">
+        import { login } from './api.js';
+
+        document.getElementById("login-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            try {
+                const { token } = await login({
+                    username: document.getElementById("username").value.trim(),
+                    password: document.getElementById("password").value.trim()
+                });
+
+                localStorage.setItem('token', token);
+                window.location.href = "Display.html";
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+    </script>
+</body>
+</html>

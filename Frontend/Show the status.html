@@ -1,0 +1,51 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ticket Status</title>
+</head>
+<body>
+  <h2>Helpdesk Tickets</h2>
+  <button onclick="loadTickets()">Refresh Tickets</button>
+  <ul id="ticket-list"></ul>
+
+  <script>
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Please log in first.");
+      window.location.href = "login.html";
+    }
+
+    async function loadTickets() {
+      try {
+        const res = await fetch("https://localhost:5001/api/ticket/list", {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+
+        if (!res.ok) {
+          throw new Error("Unauthorized or server error.");
+        }
+
+        const tickets = await res.json();
+        const list = document.getElementById("ticket-list");
+        list.innerHTML = "";
+
+        tickets.forEach(t => {
+          const li = document.createElement("li");
+          li.innerText = `${t.title} | Status: ${t.status} | Severity: ${t.severity}`;
+          list.appendChild(li);
+        });
+      } catch (err) {
+        console.error(err);
+        alert("Failed to load tickets.");
+      }
+    }
+
+    window.onload = loadTickets;
+  </script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Display Tickets</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            padding: 0.5rem;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+
+        .nav {
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <button onclick="logout()">Logout</button>
+        <button onclick="window.location.href='Submit Ticket.html'">Submit Ticket</button>
+    </div>
+
+    <h2>Ticket Display</h2>
+    <ul id="ticket-list"></ul>
+    <p class="error" id="error-message"></p>
+
+    <script type="module">
+        import { fetchWithAuth } from './api.js';
+
+        async function loadTickets() {
+            try {
+                const tickets = await fetchWithAuth('/ticket/list');
+                const list = document.getElementById("ticket-list");
+
+                list.innerHTML = tickets.length === 0
+                    ? "<li>No tickets found.</li>"
+                    : tickets.map(t => `
+                        <li>
+                            ${t.title} | ${t.status} | ${t.severity}
+                            ${t.remarks?.length ? `(${t.remarks.length} remarks)` : ''}
+                        </li>
+                    `).join('');
+            } catch (error) {
+                document.getElementById("error-message").textContent = error.message;
+            }
+        }
+
+        window.onload = loadTickets;
+    </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Submit Ticket</title>
+</head>
+<body>
+  <h2>Create a Helpdesk Ticket</h2>
+  <form id="ticket-form">
+    <input type="text" id="title" placeholder="Title" required><br />
+    <textarea id="description" placeholder="Description" required></textarea><br />
+    <select id="severity">
+      <option>Low</option>
+      <option>Medium</option>
+      <option>High</option>
+      <option>Critical</option>
+    </select><br />
+    <button type="submit">Submit Ticket</button>
+  </form>
+
+  <script type="module">
+      import { fetchWithAuth } from './api.js';
+
+      const token = localStorage.getItem("token");
+      if (!token) window.location.href = "login.html";
+
+      document.getElementById("ticket-form").addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          try {
+              await fetchWithAuth('/ticket/create', {
+                  method: 'POST',
+                  body: JSON.stringify({
+                      title: document.getElementById("title").value,
+                      description: document.getElementById("description").value,
+                      severity: document.getElementById("severity").value,
+                      status: "Open",
+                      createdBy: "current_user", // You'll need to get this from JWT
+                      departmentId: 1 // You'll need to get this from user data
+                  })
+              });
+
+              alert("Ticket created successfully!");
+              window.location.href = "Display.html";
+          } catch (error) {
+              alert(error.message);
+          }
+      });
+  </script>
+</body>
+</html>
